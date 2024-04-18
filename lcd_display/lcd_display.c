@@ -11,7 +11,7 @@
 
 int row = 0;
 int column = 0;
-
+int file;
 int main() {
 
     lcd_init();
