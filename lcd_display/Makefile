@@ -1,7 +1,7 @@
 CC ?= $(CROSS_COMPIPLE)gcc
 CFLAGS ?= -g -Wall -Werror
-TARGET ?= lcd-display
-all: lcd-display
+TARGET ?= lcd_display
+all: lcd_display
 
 # BUILDING THE LCD_DISPLAY FILE
 lcd_display: lcd_display.c lcd_display.h
