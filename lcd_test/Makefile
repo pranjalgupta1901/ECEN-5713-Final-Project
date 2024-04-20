@@ -1,15 +1,38 @@
-CC ?= $(CROSS_COMPIPLE)gcc
-CFLAGS ?= -g -Wall -Werror
-TARGET ?= lcd_test
-all: lcd_test
+# Cross-compiler (if any)
+CROSS_COMPILE ?=
+CC := $(CROSS_COMPILE)gcc
 
-# BUILDING THE LCD_TEST FILE
-lcd_test: lcd_test.c 
+# Compiler flags
+CFLAGS ?= -g -Wall -Werror
+
+# Target executable
+TARGET ?= lcd_test
+
+# Directories
+SRC_DIR := .
+LCD_DISPLAY_DIR := ../lcd_display
+
+# Source files
+SRC := $(wildcard $(SRC_DIR)/*.c)
+SRC += $(wildcard $(LCD_DISPLAY_DIR)/*.c)
+
+# Include directories
+INCLUDES := -I$(LCD_DISPLAY_DIR)
+
+# Linker flags
+LDFLAGS :=
+
+# Main target
+all: $(TARGET)
+
+# Build the lcd_test executable
+$(TARGET): $(SRC)
 	$(CC) $(CFLAGS) $^ -o $@ $(INCLUDES) $(LDFLAGS)
 
-# CLEAN TARGET
+# Clean target
 clean:
-	-rm lcd_test
+	rm -f $(TARGET)
 
-.PHONY: clean    
+.PHONY: 
+	clean
 

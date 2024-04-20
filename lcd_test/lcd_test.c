@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include "lcd_display.h"
+#include "../lcd_display/lcd_display.h"
 
 int main() {
     // Initialize LCD

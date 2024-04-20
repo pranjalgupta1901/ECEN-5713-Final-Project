@@ -12,12 +12,13 @@
 int row = 0;
 int column = 0;
 int file;
-int main() {
+/*int main() {
 
     lcd_init();
     
     return 0;
 }
+*/
 
 void lcd_init(void) {
     open_i2c_file();
