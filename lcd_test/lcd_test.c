@@ -4,33 +4,12 @@
 #include <string.h>
 #include "../lcd_display/lcd_display.h"
 
-int main() {
+ int main() {
     // Initialize LCD
-    lcd_init();
+     lcd_init();
+    lcd_move_and_write(1,5, "hello world");
 
-    // Clear LCD
-    lcd_clear();
-
-    // Display a message
-    lcdputs("Hello, World!");
-
-    // Delay to observe the display
-    sleep(5);
-
-    // Clear LCD
-    lcd_clear();
-
-    // Display another message
-    lcdputs("Testing LCD driver!");
-
-    // Delay to observe the display
-    sleep(5);
-
-    // Clear LCD
-    lcd_clear();
-
-    // You can add more tests or functionality here
-
+   close_i2c_file();  
     return 0;
 }
 
