@@ -1,10 +1,11 @@
+#include "lcd_display.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 #include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
 #include "lcd_display.h"
 
 #define LCD_SLAVE_ADDR 0x27
@@ -12,29 +13,24 @@
 int row = 0;
 int column = 0;
 int file;
-/*int main() {
-
-    lcd_init();
-    
-    return 0;
-}
-*/
 
 void lcd_init(void) {
     open_i2c_file();
-    send_data_or_command(0x01); // clearing display
-    send_data_or_command(0x38); // setting 8 bit operation and also selecting two line display and 5x8 dot character font
-    send_data_or_command(0x0F); // turning on display and cursor with cursor blinking on
-    send_data_or_command(0x06); // Cursor move direction increment with display shift off
-    send_data_or_command(0x14); // Cursor moving and shifting to the right
-    send_data_or_command(0x02); // returning to home
-    send_data_or_command(0x80);
+	send_data_or_command(0x03);
+	send_data_or_command(0x03);
+	send_data_or_command(0x03);
+	send_data_or_command(0x02);
+    	send_data_or_command(0x06); // Cursor move direction increment with display shift off
+    	send_data_or_command(0x28); 
+    	send_data_or_command(0x0C); 
+    	send_data_or_command(0x01); 
+    	send_data_or_command(0x02); // Returning to home
 }
 
 void send_data_or_command(unsigned char ch) {
     open_i2c_file();
     write(file, &ch, 1);
-    delay();
+    usleep(100); // Delay after sending data or command
     close_i2c_file();
 }
 
@@ -55,8 +51,15 @@ void close_i2c_file() {
     close(file);
 }
 
-void delay(void) {
-    usleep(3000);
+void lcd_clear(void) {
+    send_data_or_command(0x01); // Clearing command
+}
+
+void lcdputs(const char *str) {
+    size_t len = strlen(str);
+    for (size_t i = 0; i < len; i++) {
+        lcdputch(str[i]);
+    }
 }
 
 void lcdputch(unsigned char c) {
@@ -72,10 +75,6 @@ void lcdputch(unsigned char c) {
     }
     send_data_or_command(c);
     column++;
-}
-
-void lcd_clear(void) {
-    send_data_or_command(1); // clearing command
 }
 
 void lcdgotoaddr(uint8_t address) {
@@ -95,9 +94,4 @@ void lcdgotoxy(uint8_t set_row, uint8_t set_column) {
         lcdgotoaddr(0x54 + set_column);
 }
 
-void lcdputs(const char *str) {
-    size_t len = strlen(str);
-    for (size_t i = 0; i < len; i++) {
-        lcdputch(str[i]);
-    }
-}
+
