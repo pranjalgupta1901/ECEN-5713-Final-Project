@@ -111,6 +111,7 @@ while(1){
 		printf("data recieved completely\n");
 	else if(bytes_rec > 0){
 		lcd_clear(); 
+		printf("%s\n", buffer);
 	        lcd_move_and_write(1,5, buffer);
         	}
 	}
