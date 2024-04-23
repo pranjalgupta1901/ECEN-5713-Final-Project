@@ -13,6 +13,8 @@
 #include <stdbool.h>
 #include <sys/stat.h>
 #include <arpa/inet.h>
+#include "../lcd_display/lcd_display.h"
+
 
 int socket_fd, client_fd;
 void daemonize(void);
@@ -54,22 +56,21 @@ void setup_signal()
 	}
 }
 
+
 int main(int argc, char *argv[])
 {
 
 	struct sockaddr_in server_addr;
 	char buffer[1024];
 	int errorcode;
-//	int var = 0;
 	int port = 9000;
-    const char *server_ip = "10.0.0.234";
-//	char ip_addr[INET6_ADDRSTRLEN];
+        const char *server_ip = "10.0.0.234";
 
 	openlog("aesdsocket", LOG_CONS | LOG_PID, LOG_USER);
 	
 
 	setup_signal();
-
+	lcd_init();
 	socket_fd = socket(PF_INET, SOCK_STREAM, 0);
 	if (socket_fd == -1)
 	{
@@ -106,13 +107,12 @@ while(1){
 	memset(buffer, 0, 1024);
 	
 	int bytes_rec = recv(socket_fd, buffer, 1024, 0);
-	if(bytes_rec == -1)
-		printf("No data recieved\n");
-	else if (bytes_rec == 0)
+	if (bytes_rec == 0)
 		printf("data recieved completely\n");
-	else 
-	        printf("the data recieved is %s\n", buffer);
-        	
+	else if(bytes_rec > 0){
+		lcd_clear(); 
+	        lcd_move_and_write(1,5, buffer);
+        	}
 	}
 	syslog(LOG_DEBUG, "Process Completed\n");
 	return 0;
