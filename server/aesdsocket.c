@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <sys/stat.h>
 #include <arpa/inet.h>
+#include "../lcd_display/lcd_display.h"
 
 #define FILE_SIZE 1024
 char file_array[FILE_SIZE];
@@ -55,12 +56,12 @@ void setup_signal()
 
 int main(int argc, char *argv[])
 {
-
+//struct sockaddr_in server_addr;
 	struct addrinfo hints, *result;
 	int errorcode;
 	const char *port = "9000";
 	char ip_addr[INET6_ADDRSTRLEN];
-
+//const char *server_ip = "10.0.0.221";
 	openlog("aesdsocket", LOG_CONS | LOG_PID, LOG_USER);
 	memset(&hints, 0, sizeof(hints));
 
@@ -115,6 +116,11 @@ int main(int argc, char *argv[])
 		closelog();
 		exit(-1);
 	}
+	
+	int count  = 0;
+
+	while (1)
+	{
 
 	struct sockaddr_in client_addr;
 	socklen_t client_addr_size = sizeof(client_addr);
@@ -127,16 +133,16 @@ int main(int argc, char *argv[])
 		closelog();
 	}
 	
-
+	if(count == 0){
 	struct sockaddr_in *ip_addr_ptr = (struct sockaddr_in *)&client_addr;
 
 	inet_ntop(AF_INET, &ip_addr_ptr->sin_addr, ip_addr, INET_ADDRSTRLEN);
 
 	syslog(LOG_DEBUG, "Accepted connection from %s\n", ip_addr);
-	
+	printf("Accepted connection from %s\n", ip_addr);
+	}
+	count++;
 
-	while (1)
-	{
 
 
 		syslog(LOG_DEBUG, "Recieve Started\n");
@@ -144,10 +150,11 @@ int main(int argc, char *argv[])
 		int bytes_rec;
 		bool rec_complete = false;
 		char *ptr = NULL;
-		while (rec_complete == false)
-		{
-
+		while (rec_complete == false){
+		
+			memset(file_array, 0, 1024);
 			bytes_rec = recv(client_fd, file_array, FILE_SIZE, 0);
+			printf("%d\n",bytes_rec);
 			if (bytes_rec < 0)
 			{
 				syslog(LOG_DEBUG, "Closed connection from %s\n", ip_addr);
@@ -157,27 +164,56 @@ int main(int argc, char *argv[])
 			}
 			else
 			{
-				
-				ptr = memchr(file_array, '\n', bytes_rec);
+				ptr = memchr(file_array, '$', bytes_rec);
 				if (ptr != NULL)
-				{
+				{	
+					printf("%s\n", file_array);
 					rec_complete = true;
 					break;
+					//lcd_clear(); 
+					
+	        			//lcd_move_and_write(0,1, file_array);
+					//break;
 				}
 			}
 			
-		}
 		
+		}
 
-		int bytes_send = 2;
+/*
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = PF_INET;
+    server_addr.sin_addr.s_addr = ip_addr;
+    server_addr.sin_port = htons(port);   
+	//close(socket_fd);
+	errorcode = connect(socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr));
+	if (errorcode == -1)
+	{
+		close(socket_fd);
+		syslog(LOG_PERROR, "Connect failed with error code %d and closing client socket \n", errno);
+		printf("error while connecting\n");
+		closelog();
+		exit(-1);
+	}
+	printf("connection accepted\n");
+
+*/
+
+		int bytes_send = bytes_rec;
 		int sent_actual;
 		
 		sent_actual = send(client_fd, file_array, bytes_send, 0);
 		if (sent_actual != bytes_send)
 		{
 			close(client_fd);
+			
+			printf("error found\n");
 			perror("error in sending data to socket");
 		}
+		
+		printf(" send actual : %d\n", sent_actual);
+		close(client_fd);
+		rec_complete = false;
 	}
 				
 	syslog(LOG_DEBUG, "Process Completed\n");

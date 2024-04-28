@@ -1,15 +1,38 @@
-CC ?= $(CROSS_COMPIPLE)gcc
-CFLAGS ?= -g -Wall -Werror
-LDFLAGS ?= -lpthread -lrt
-TARGET ?= aesdsocket
-all: aesdsocket
+# Cross-compiler (if any)
+CROSS_COMPILE ?=
+CC := $(CROSS_COMPILE)gcc
 
-# BUILDING THE WRITER FILE
-aesdsocket: aesdsocket.c
+# Compiler flags
+CFLAGS ?= -g -Wall -Werror
+
+# Target executable
+TARGET ?= aesdsocket
+
+# Directories
+SRC_DIR := .
+LCD_DISPLAY_DIR := ../lcd_display
+
+# Source files
+SRC := $(wildcard $(SRC_DIR)/*.c)
+SRC += $(wildcard $(LCD_DISPLAY_DIR)/*.c)
+
+# Include directories
+INCLUDES := -I$(LCD_DISPLAY_DIR)
+
+# Linker flags
+LDFLAGS :=
+
+# Main target
+all: $(TARGET)
+
+# Build the lcd_test executable
+$(TARGET): $(SRC)
 	$(CC) $(CFLAGS) $^ -o $@ $(INCLUDES) $(LDFLAGS)
 
-# CLEAN TARGET
+# Clean target
 clean:
-	-rm aesdsocket
+	rm -f $(TARGET)
 
-.PHONY: clean
+.PHONY: 
+	clean
+

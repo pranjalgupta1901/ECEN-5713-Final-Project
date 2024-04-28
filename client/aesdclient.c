@@ -13,7 +13,7 @@
 #include <stdbool.h>
 #include <sys/stat.h>
 #include <arpa/inet.h>
-#include "../lcd_display/lcd_display.h"
+//#include "../lcd_display/lcd_display.h"
 
 
 int socket_fd, client_fd;
@@ -61,16 +61,16 @@ int main(int argc, char *argv[])
 {
 
 	struct sockaddr_in server_addr;
-	char buffer[1024];
+	char buffer[1024] = "hellow world$";
 	int errorcode;
 	int port = 9000;
-        const char *server_ip = "10.0.0.234";
+        const char *server_ip = "10.0.0.229";
 
 	openlog("aesdsocket", LOG_CONS | LOG_PID, LOG_USER);
 	
 
 	setup_signal();
-	lcd_init();
+	//lcd_init();
 	socket_fd = socket(PF_INET, SOCK_STREAM, 0);
 	if (socket_fd == -1)
 	{
@@ -100,12 +100,13 @@ int main(int argc, char *argv[])
 		closelog();
 		exit(-1);
 	}
+	printf("connection accepted\n");
 
     syslog(LOG_DEBUG, "Connection established to server %s and port %d", server_ip, port);
 
 while(1){
-	memset(buffer, 0, 1024);
-	
+	sleep(1);
+/*	
 	int bytes_rec = recv(socket_fd, buffer, 1024, 0);
 	if (bytes_rec == 0)
 		printf("data recieved completely\n");
@@ -114,9 +115,25 @@ while(1){
 		printf("%s\n", buffer);
 	        lcd_move_and_write(1,5, buffer);
         	}
-	}
+	*/
+	
+	
+		
+		int bytes_send = 14;
+		//printf("strlen len %d\n", bytes_send);
+		int sent_actual;
+		
+		sent_actual = send(socket_fd, buffer, 14, 0);
+		if (sent_actual != bytes_send)
+		{
+			close(client_fd);
+			perror("error in sending data to socket");
+			printf("errror\n");
+		}
+		
 	syslog(LOG_DEBUG, "Process Completed\n");
-	return 0;
+	printf("sent actual : %d\n", sent_actual);
+}
 }
 
 void daemonize(void)
