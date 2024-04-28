@@ -14,6 +14,13 @@
 #include <sys/stat.h>
 #include <arpa/inet.h>
 #include "../lcd_display/lcd_display.h"
+#include "../gpio/gpio.h"
+
+
+
+#define BUTTON_PAUSE "5"
+#define BUTTON_PLAY "6"
+#define BUTTON_PLAY_NEXT "13"
 
 #define FILE_SIZE 1024
 char file_array[FILE_SIZE];
@@ -29,6 +36,61 @@ void mysig(int signo)
 		exit(EXIT_SUCCESS);
 	}
 }
+
+
+void pause_event(void){
+
+		int sent_actual;
+		
+		sent_actual = send(client_fd, "1", 1, 0);
+		if (sent_actual != 1)
+		{
+			close(client_fd);
+			
+			printf("error found\n");
+			perror("error in sending data to socket");
+		}
+		
+		printf(" send actual : %d\n", sent_actual);	
+		
+}
+
+
+void play_event(void){
+
+		int sent_actual;
+		
+		sent_actual = send(client_fd, "2", 1, 0);
+		if (sent_actual != 1)
+		{
+			close(client_fd);
+			
+			printf("error found\n");
+			perror("error in sending data to socket");
+		}
+		
+		printf(" send actual : %d\n", sent_actual);	
+		
+}
+
+void play_next_event(void){
+
+		int sent_actual;
+		
+		sent_actual = send(client_fd, "2", 1, 0);
+		if (sent_actual != 1)
+		{
+			close(client_fd);
+			
+			printf("error found\n");
+			perror("error in sending data to socket");
+		}
+		
+		printf(" send actual : %d\n", sent_actual);	
+		
+}
+
+
 void setup_signal()
 {
 
@@ -56,17 +118,27 @@ void setup_signal()
 
 int main(int argc, char *argv[])
 {
-//struct sockaddr_in server_addr;
 	struct addrinfo hints, *result;
 	int errorcode;
+	char *token;
 	const char *port = "9000";
 	char ip_addr[INET6_ADDRSTRLEN];
-//const char *server_ip = "10.0.0.221";
 	openlog("aesdsocket", LOG_CONS | LOG_PID, LOG_USER);
 	memset(&hints, 0, sizeof(hints));
 
 	setup_signal();
+	lcd_init();
+	
+	
+	export_gpio(BUTTON_PAUSE);
+	export_gpio(BUTTON_PLAY);
+	export_gpio(BUTTON_PLAY_NEXT);
 
+	
+	gpio_set_direction(BUTTON_PAUSE, DIRECTION_LOW);
+	gpio_set_direction(BUTTON_PLAY, DIRECTION_LOW);
+	gpio_set_direction(BUTTON_PLAY_NEXT, DIRECTION_LOW);
+	
 	hints.ai_family = PF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
@@ -170,54 +242,41 @@ int main(int argc, char *argv[])
 					printf("%s\n", file_array);
 					rec_complete = true;
 					break;
-					//lcd_clear(); 
 					
-	        			//lcd_move_and_write(0,1, file_array);
-					//break;
 				}
 			}
 			
 		
 		}
 
-/*
-    memset(&server_addr, 0, sizeof(server_addr));
-    server_addr.sin_family = PF_INET;
-    server_addr.sin_addr.s_addr = ip_addr;
-    server_addr.sin_port = htons(port);   
-	//close(socket_fd);
-	errorcode = connect(socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr));
-	if (errorcode == -1)
-	{
-		close(socket_fd);
-		syslog(LOG_PERROR, "Connect failed with error code %d and closing client socket \n", errno);
-		printf("error while connecting\n");
-		closelog();
-		exit(-1);
-	}
-	printf("connection accepted\n");
-
-*/
-
-		int bytes_send = bytes_rec;
-		int sent_actual;
+	lcd_clear();
+	token = strtok(file_array, "#");
+	int row = 0;
+	lcd_move_and_write(row++,0, token);
+	token = strtok(NULL, "#");
+	lcd_move_and_write(row++,0, token);
+	token = strtok(NULL, "#");
+	lcd_move_and_write(row++,0, token);
+	token = strtok(NULL, "#");
+	
+	
+	if(read_gpio_state(BUTTON_PAUSE) == 1)
+		pause_event();
+	else if(read_gpio_state(BUTTON_PLAY) == 1)
+		play_event();
+	else if(read_gpio_state(BUTTON_PLAY_NEXT) == 1)
+		play_next_event();
 		
-		sent_actual = send(client_fd, file_array, bytes_send, 0);
-		if (sent_actual != bytes_send)
-		{
-			close(client_fd);
-			
-			printf("error found\n");
-			perror("error in sending data to socket");
-		}
-		
-		printf(" send actual : %d\n", sent_actual);
-		close(client_fd);
-		rec_complete = false;
-	}
+	close(client_fd);
+	rec_complete = false;
+	
+	}	
+	
 				
 	syslog(LOG_DEBUG, "Process Completed\n");
 	return 0;
 }
+
+
 
 

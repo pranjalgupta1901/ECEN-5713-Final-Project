@@ -93,10 +93,6 @@ int gpio_set_direction(const char *gpio_pin, const char *direction){
 }
 
 
-int main(){
-return 0;
-}
-
 
 
 
