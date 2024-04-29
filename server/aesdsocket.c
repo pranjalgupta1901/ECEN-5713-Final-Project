@@ -18,10 +18,10 @@
 
 
 
-#define BUTTON_PAUSE "5"
-#define BUTTON_PLAY "6"
-#define BUTTON_PLAY_NEXT "13"
-#define BUTTON_PLAY_PREVIOUS "14"
+#define BUTTON_PAUSE "17"
+#define BUTTON_PLAY "27"
+#define BUTTON_PLAY_NEXT "22"
+#define BUTTON_PLAY_PREVIOUS "23"
 
 
 
@@ -282,13 +282,13 @@ int main(int argc, char *argv[])
 	token = strtok(NULL, "#");
 	
 	
-	if(read_gpio_state(BUTTON_PAUSE) == 0)
+	if(read_gpio_state(BUTTON_PAUSE) == 1)
 		pause_event();
-	else if(read_gpio_state(BUTTON_PLAY) == 0)
+	else if(read_gpio_state(BUTTON_PLAY) == 1)
 		play_event();
-	else if(read_gpio_state(BUTTON_PLAY_NEXT) == 0)
+	else if(read_gpio_state(BUTTON_PLAY_NEXT) == 1)
 		play_next_event();
-	else if(read_gpio_state(BUTTON_PLAY_PREVIOUS) == 0)
+	else if(read_gpio_state(BUTTON_PLAY_PREVIOUS) == 1)
 		play_previous_event();
 		
 		
