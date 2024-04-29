@@ -21,6 +21,9 @@
 #define BUTTON_PAUSE "5"
 #define BUTTON_PLAY "6"
 #define BUTTON_PLAY_NEXT "13"
+#define BUTTON_PLAY_PREVIOUS "14"
+
+
 
 #define FILE_SIZE 1024
 char file_array[FILE_SIZE];
@@ -73,11 +76,29 @@ void play_event(void){
 		
 }
 
+void play_previous_event(void){
+
+		int sent_actual;
+		
+		sent_actual = send(client_fd, "4", 1, 0);
+		if (sent_actual != 1)
+		{
+			close(client_fd);
+			
+			printf("error found\n");
+			perror("error in sending data to socket");
+		}
+		
+		printf(" send actual : %d\n", sent_actual);	
+		
+}
+
+
 void play_next_event(void){
 
 		int sent_actual;
 		
-		sent_actual = send(client_fd, "2", 1, 0);
+		sent_actual = send(client_fd, "3", 1, 0);
 		if (sent_actual != 1)
 		{
 			close(client_fd);
@@ -133,11 +154,12 @@ int main(int argc, char *argv[])
 	export_gpio(BUTTON_PAUSE);
 	export_gpio(BUTTON_PLAY);
 	export_gpio(BUTTON_PLAY_NEXT);
-
+	export_gpio(BUTTON_PLAY_PREVIOUS);
 	
-	gpio_set_direction(BUTTON_PAUSE, DIRECTION_LOW);
-	gpio_set_direction(BUTTON_PLAY, DIRECTION_LOW);
-	gpio_set_direction(BUTTON_PLAY_NEXT, DIRECTION_LOW);
+	gpio_set_direction(BUTTON_PAUSE, DIRECTION_IN);
+	gpio_set_direction(BUTTON_PLAY, DIRECTION_IN);
+	gpio_set_direction(BUTTON_PLAY_NEXT, DIRECTION_IN);
+	gpio_set_direction(BUTTON_PLAY_NEXT, DIRECTION_IN);
 	
 	hints.ai_family = PF_INET;
 	hints.ai_socktype = SOCK_STREAM;
@@ -266,6 +288,9 @@ int main(int argc, char *argv[])
 		play_event();
 	else if(read_gpio_state(BUTTON_PLAY_NEXT) == 1)
 		play_next_event();
+	else if(read_gpio_state(BUTTON_PLAY_PREVIOUS) == 1)
+		play_previous_event();
+		
 		
 	close(client_fd);
 	rec_complete = false;
