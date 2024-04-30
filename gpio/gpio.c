@@ -37,6 +37,38 @@ int export_gpio(const char *gpio_pin) {
     return 0;
 }
 
+
+int unexport_gpio(const char *gpio_pin) {
+    int fd, len;
+    char buf[100];
+
+    fd = open("/sys/class/gpio/unexport", O_WRONLY);
+    if (fd < 0) {
+        perror("Failed to open export for writing");
+        return -1;
+    }
+	
+	// using snprintf instead of sprintf to prevent buffer overflow
+    len = snprintf(buf, sizeof(buf), "%s", gpio_pin);
+    if (write(fd, buf, len) < 0) {
+        perror("Failed to export GPIO");
+        close(fd);
+        return -1;
+    }
+
+    close(fd);
+    
+    struct stat check_file_status;
+    
+    snprintf(buf, sizeof(buf), "/sys/class/gpio/gpio%s", gpio_pin);
+    if(stat(buf, &check_file_status) == 0){
+    	perror("Failed to export, verified by using stat ");
+    	return -1;
+    }
+    
+    return 0;
+}
+
 // first this gpiofile should be exported and direction should be set before calling this fucntion
 int read_gpio_state(const char *gpio_pin){
 

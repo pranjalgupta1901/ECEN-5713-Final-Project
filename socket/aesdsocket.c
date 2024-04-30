@@ -72,8 +72,13 @@ void pause_event(void){
 		if (sent_actual != 1)
 		{
 			close(client_fd);
+			
+			printf("error found\n");
 			perror("error in sending data to socket");
 		}
+		
+		printf(" send actual : %d\n", sent_actual);	
+		
 }
 
 
@@ -85,8 +90,13 @@ void play_event(void){
 		if (sent_actual != 1)
 		{
 			close(client_fd);
+			
+			printf("error found\n");
 			perror("error in sending data to socket");
 		}
+		
+		printf(" send actual : %d\n", sent_actual);	
+		
 }
 
 void play_previous_event(void){
@@ -97,8 +107,13 @@ void play_previous_event(void){
 		if (sent_actual != 1)
 		{
 			close(client_fd);
+			
+			printf("error found\n");
 			perror("error in sending data to socket");
-		}	
+		}
+		
+		printf(" send actual : %d\n", sent_actual);	
+		
 }
 
 
@@ -110,8 +125,12 @@ void play_next_event(void){
 		if (sent_actual != 1)
 		{
 			close(client_fd);
+			
+			printf("error found\n");
 			perror("error in sending data to socket");
 		}
+		
+		printf(" send actual : %d\n", sent_actual);	
 		
 }
 
@@ -264,6 +283,7 @@ int main(int argc, char *argv[])
 		
 			memset(file_array, 0, 1024);
 			bytes_rec = recv(client_fd, file_array, FILE_SIZE, 0);
+			printf("%d\n",bytes_rec);
 			if (bytes_rec < 0)
 			{
 				syslog(LOG_DEBUG, "Closed connection from %s\n", ip_addr);
