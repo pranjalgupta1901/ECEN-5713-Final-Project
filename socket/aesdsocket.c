@@ -31,23 +31,15 @@ int socket_fd, client_fd;
 
 static void close_gpio(){
 	
-	if(unexport_gpio(BUTTON_PAUSE) == -1){
-		perror("unexport failed for pause gpio pin");
-		return -1;
-	}
-	if(unexport_gpio(BUTTON_PLAY) == -1){
+	if(unexport_gpio(BUTTON_PAUSE) == -1)
+		perror("unexport failed for pause gpio pin");	
+	if(unexport_gpio(BUTTON_PLAY) == -1)
 		perror("unexport failed for play gpio pin");
-		return -1;
-	}
-	if(unexport_gpio(BUTTON_PLAY_NEXT) == -1){
+		
+	if(unexport_gpio(BUTTON_PLAY_NEXT) == -1)
 		perror("unexport failed for play next gpio pin");
-		return -1;
-	}
-	if(unexport_gpio(BUTTON_PLAY_PREVIOUS) == -1){
+	if(unexport_gpio(BUTTON_PLAY_PREVIOUS) == -1)
 		perror("unexport failed for play previous gpio pin");
-		return -1;
-	}
-
 
 }
 
@@ -72,12 +64,8 @@ void pause_event(void){
 		if (sent_actual != 1)
 		{
 			close(client_fd);
-			
-			printf("error found\n");
 			perror("error in sending data to socket");
 		}
-		
-		printf(" send actual : %d\n", sent_actual);	
 		
 }
 
@@ -90,12 +78,8 @@ void play_event(void){
 		if (sent_actual != 1)
 		{
 			close(client_fd);
-			
-			printf("error found\n");
 			perror("error in sending data to socket");
 		}
-		
-		printf(" send actual : %d\n", sent_actual);	
 		
 }
 
@@ -107,12 +91,8 @@ void play_previous_event(void){
 		if (sent_actual != 1)
 		{
 			close(client_fd);
-			
-			printf("error found\n");
 			perror("error in sending data to socket");
 		}
-		
-		printf(" send actual : %d\n", sent_actual);	
 		
 }
 
@@ -125,13 +105,8 @@ void play_next_event(void){
 		if (sent_actual != 1)
 		{
 			close(client_fd);
-			
-			printf("error found\n");
 			perror("error in sending data to socket");
 		}
-		
-		printf(" send actual : %d\n", sent_actual);	
-		
 }
 
 

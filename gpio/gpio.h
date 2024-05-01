@@ -5,6 +5,7 @@
 #define DIRECTION_IN "in"
 
 int export_gpio(const char *gpio_pin);
+int unexport_gpio(const char *gpio_pin);
 int read_gpio_state(const char *gpio_pin);
 int gpio_set_direction(const char *gpio_pin, const char *direction);
 
